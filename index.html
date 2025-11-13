@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบคำนวณค่าชดเชย UUC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #e0e0e0;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .calibration-points {
+            display: grid;
+            gap: 20px;
+        }
+
+        .point-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .point-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            font-weight: 500;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[readonly] {
+            background: #f0f0f0;
+        }
+
+        .locations-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        td input {
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
+        .btn-calculate-all {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn-calculate-all:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-export {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-export:hover {
+            opacity: 0.9;
+        }
+
+        .formula-display {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .formula-display pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            animation: highlight 1s ease;
+        }
+
+        @keyframes highlight {
+            0% { background: #fff3cd; }
+            100% { background: transparent; }
+        }
+
+        @media (max-width: 768px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌡️ ระบบคำนวณค่าชดเชย UUC</h1>
+        <p class="subtitle">Under Uncertainty of Calibration - Sensor Location Management</p>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('calibration')">⚙️ ตั้งค่า Calibration</button>
+            <button class="tab" onclick="switchTab('calculation')">📊 คำนวณตาม Location</button>
+        </div>
+
+        <!-- Tab: Calibration Setup -->
+        <div id="calibration" class="tab-content active">
+            <div class="section">
+                <div class="section-title">📊 ข้อมูล Calibration Points (3 จุด)</div>
+                
+                <div class="calibration-points">
+                    <div class="point-group">
+                        <div class="point-title">จุดที่ 1 (อุณหภูมิต่ำ)</div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Mean UUC (°C)</label>
+                                <input type="number" id="mean1" step="0.001" value="-14.7">
+                            </div>
+                            <div class="input-group">
+                                <label>Standard (°C)</label>
+                                <input type="number" id="std1" step="0.001" value="-14.942">
+                            </div>
+                            <div class="input-group">
+                                <label>Error</label>
+                                <input type="number" id="err1" step="0.001" value="0.242" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="point-group">
+                        <div class="point-title">จุดที่ 2 (อุณหภูมิกลาง)</div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Mean UUC (°C)</label>
+                                <input type="number" id="mean2" step="0.001" value="25.2">
+                            </div>
+                            <div class="input-group">
+                                <label>Standard (°C)</label>
+                                <input type="number" id="std2" step="0.001" value="25.030">
+                            </div>
+                            <div class="input-group">
+                                <label>Error</label>
+                                <input type="number" id="err2" step="0.001" value="0.170" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="point-group">
+                        <div class="point-title">จุดที่ 3 (อุณหภูมิสูง)</div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Mean UUC (°C)</label>
+                                <input type="number" id="mean3" step="0.001" value="34.9">
+                            </div>
+                            <div class="input-group">
+                                <label>Standard (°C)</label>
+                                <input type="number" id="std3" step="0.001" value="35.028">
+                            </div>
+                            <div class="input-group">
+                                <label>Error</label>
+                                <input type="number" id="err3" step="0.001" value="-0.128" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="formula-display" id="formulaDisplay">
+                    <strong>📐 สมการที่ใช้คำนวณ (Polynomial Form):</strong><br>
+                    Error = a + bT + cT²<br>
+                    Standard Value = Mean of UUC − Error
+                </div>
+
+                <div class="formula-display" id="lagrangeDisplay">
+                    <strong>📐 สมการ Lagrange Polynomial แบบเต็ม (Interpolation สำหรับ 3 จุด):</strong><br>
+                    <em>สมการนี้ใช้สำหรับการประมาณค่า Error ที่อุณหภูมิ T ใดๆ โดยผ่านจุด calibration ทั้ง 3 จุด (x₁, y₁), (x₂, y₂), (x₃, y₃)<br>
+                    โดยที่ x = Mean UUC (°C), y = Error (°C)</em><br><br>
+                    
+                    <strong>Error(T) = y₁ ⋅ L₁(T) + y₂ ⋅ L₂(T) + y₃ ⋅ L₃(T)</strong><br><br>
+                    
+                    <strong>ฐาน (Basis Polynomials):</strong><br>
+                    L₁(T) = <span id="L1_num"></span> / <span id="L1_den"></span> = \frac{(T - x₂)(T - x₃)}{(x₁ - x₂)(x₁ - x₃)}<br>
+                    L₂(T) = <span id="L2_num"></span> / <span id="L2_den"></span> = \frac{(T - x₁)(T - x₃)}{(x₂ - x₁)(x₂ - x₃)}<br>
+                    L₃(T) = <span id="L3_num"></span> / <span id="L3_den"></span> = \frac{(T - x₁)(T - x₂)}{(x₃ - x₁)(x₃ - x₂)}<br><br>
+                    
+                    <pre id="fullFormula" style="font-family: monospace; white-space: pre-wrap;">
+Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ - mean₃)] 
+         + err₂ × [(T - mean₁)(T - mean₃) / (mean₂ - mean₁)(mean₂ - mean₃)] 
+         + err₃ × [(T - mean₁)(T - mean₂) / (mean₃ - mean₁)(mean₃ - mean₂)]
+
+ค่าหลังปรับ (Standard Value) = T - Error(T)
+                    </pre>
+                    
+                    <em><strong>หมายเหตุ:</strong> สมการนี้เป็น polynomial ระดับ 2 (quadratic) ที่ผ่านจุดทั้ง 3 โดยอัตโนมัติ เนื่องจาก Lagrange interpolation สำหรับ n+1 จุดให้ polynomial ระดับ n.</em>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Calculation by Location -->
+        <div id="calculation" class="tab-content">
+            <div class="section">
+                <div class="section-title">📍 คำนวณค่า Adjustment แยกตาม Sensor Location</div>
+                
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
+                    <strong>📝 วิธีใช้งาน:</strong><br>
+                    1. กรอก <strong>"ค่าที่วัดได้"</strong> จากเครื่องมือวัด<br>
+                    2. ระบบจะคำนวณ <strong>"Adjustment"</strong> (ค่าชดเชย) อัตโนมัติ<br>
+                    3. แสดง <strong>"ค่าหลัง Adjust"</strong> (ค่าที่แท้จริง) = ค่าที่วัดได้ - Adjustment
+                </div>
+                
+                <div class="locations-table">
+                    <table id="locationsTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%;">#</th>
+                                <th style="width: 30%;">Sensor Location</th>
+                                <th style="width: 20%;">ค่าที่วัดได้ (°C)</th>
+                                <th style="width: 22.5%;">Adjustment</th>
+                                <th style="width: 22.5%;">ค่าหลัง Adjust (°C)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="locationsBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <button class="btn-calculate-all" onclick="calculateAll()">🔄 คำนวณทั้งหมด</button>
+                <button class="btn-export" onclick="exportToCSV()">📥 ดาวน์โหลด CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const locations = [
+            "Coating room S1",
+            "Coating room S2",
+            "PCM high index S1",
+            "PCM high index S2",
+            "Clean room S1",
+            "Clean room S2",
+            "Casting area",
+            "PMG room",
+            "Server room",
+            "Mixing room 1.5",
+            "Monomer Stock 1.6",
+            "Monomer Stock PCM",
+            "Monomer Stock 1.5",
+            "Ring production",
+            "Mixing room 1.6",
+            "Clean room S1",
+            "Clean room S2",
+            "Casting area",
+            "Polymerization area",
+            "Product cleaning area",
+            "Mould cleaning area",
+            "Color check room",
+            "Qc area",
+            "Server room"
+        ];
+
+        // สร้างตาราง
+        function initializeTable() {
+            const tbody = document.getElementById('locationsBody');
+            tbody.innerHTML = '';
+            
+            locations.forEach((location, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><strong>${location}</strong></td>
+                    <td><input type="number" step="0.01" id="measured_${index}" placeholder="กรอกค่าที่วัดได้" onchange="calculateSingle(${index})"></td>
+                    <td><input type="number" step="0.001" id="adjustment_${index}" readonly style="background: #fff3cd; font-weight: 600;"></td>
+                    <td><input type="number" step="0.001" id="adjusted_${index}" readonly style="background: #d4edda; font-weight: 600;"></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // คำนวณ Error อัตโนมัติ
+        function updateError(pointNum) {
+            const mean = parseFloat(document.getElementById('mean' + pointNum).value);
+            const std = parseFloat(document.getElementById('std' + pointNum).value);
+            if (!isNaN(mean) && !isNaN(std)) {
+                const error = mean - std;
+                document.getElementById('err' + pointNum).value = error.toFixed(3);
+                updateFormula();
+                updateLagrangeFormula();
+            }
+        }
+
+        // อัปเดตสมการ Polynomial (เดิม)
+        function updateFormula() {
+            const x1 = parseFloat(document.getElementById('mean1').value);
+            const y1 = parseFloat(document.getElementById('err1').value);
+            const x2 = parseFloat(document.getElementById('mean2').value);
+            const y2 = parseFloat(document.getElementById('err2').value);
+            const x3 = parseFloat(document.getElementById('mean3').value);
+            const y3 = parseFloat(document.getElementById('err3').value);
+
+            if (!isNaN(x1) && !isNaN(y1) && !isNaN(x2) && !isNaN(y2) && !isNaN(x3) && !isNaN(y3)) {
+                const coeffs = getPolynomialCoefficients(x1, y1, x2, y2, x3, y3);
+                document.getElementById('formulaDisplay').innerHTML = `
+                    <strong>📐 สมการที่ใช้คำนวณ (Polynomial Form):</strong><br>
+                    Error = ${coeffs.a.toFixed(8)} ${coeffs.b >= 0 ? '+' : ''}${coeffs.b.toFixed(8)}T ${coeffs.c >= 0 ? '+' : ''}${coeffs.c.toFixed(8)}T²<br>
+                    Standard Value = Mean of UUC − Error
+                `;
+            }
+        }
+
+        // อัปเดตสมการ Lagrange แบบเต็ม
+        function updateLagrangeFormula() {
+            const x1 = parseFloat(document.getElementById('mean1').value);
+            const y1 = parseFloat(document.getElementById('err1').value);
+            const x2 = parseFloat(document.getElementById('mean2').value);
+            const y2 = parseFloat(document.getElementById('err2').value);
+            const x3 = parseFloat(document.getElementById('mean3').value);
+            const y3 = parseFloat(document.getElementById('err3').value);
+
+            if (!isNaN(x1) && !isNaN(y1) && !isNaN(x2) && !isNaN(y2) && !isNaN(x3) && !isNaN(y3)) {
+                // คำนวณ denominator สำหรับ L1, L2, L3
+                const L1_den = (x1 - x2) * (x1 - x3);
+                const L2_den = (x2 - x1) * (x2 - x3);
+                const L3_den = (x3 - x1) * (x3 - x2);
+
+                // อัพเดท spans สำหรับ numerators (แต่เนื่องจากเป็น symbolic, แสดงเป็น text)
+                document.getElementById('L1_num').textContent = `(T - ${x2.toFixed(3)})(T - ${x3.toFixed(3)})`;
+                document.getElementById('L1_den').textContent = `(${x1.toFixed(3)} - ${x2.toFixed(3)})( ${x1.toFixed(3)} - ${x3.toFixed(3)}) = ${L1_den.toFixed(6)}`;
+
+                document.getElementById('L2_num').textContent = `(T - ${x1.toFixed(3)})(T - ${x3.toFixed(3)})`;
+                document.getElementById('L2_den').textContent = `(${x2.toFixed(3)} - ${x1.toFixed(3)})( ${x2.toFixed(3)} - ${x3.toFixed(3)}) = ${L2_den.toFixed(6)}`;
+
+                document.getElementById('L3_num').textContent = `(T - ${x1.toFixed(3)})(T - ${x2.toFixed(3)})`;
+                document.getElementById('L3_den').textContent = `(${x3.toFixed(3)} - ${x1.toFixed(3)})( ${x3.toFixed(3)} - ${x2.toFixed(3)}) = ${L3_den.toFixed(6)}`;
+
+                // อัพเดท full formula pre
+                const fullFormula = `Error(T) = ${y1.toFixed(3)} × [(T - ${x2.toFixed(3)})(T - ${x3.toFixed(3)}) / (${x1.toFixed(3)} - ${x2.toFixed(3)})( ${x1.toFixed(3)} - ${x3.toFixed(3)})] 
+         + ${y2.toFixed(3)} × [(T - ${x1.toFixed(3)})(T - ${x3.toFixed(3)}) / (${x2.toFixed(3)} - ${x1.toFixed(3)})( ${x2.toFixed(3)} - ${x3.toFixed(3)})] 
+         + ${y3.toFixed(3)} × [(T - ${x1.toFixed(3)})(T - ${x2.toFixed(3)}) / (${x3.toFixed(3)} - ${x1.toFixed(3)})( ${x3.toFixed(3)} - ${x2.toFixed(3)})]
+
+ค่าหลังปรับ (Standard Value) = T - Error(T)`;
+                document.getElementById('fullFormula').textContent = fullFormula;
+            }
+        }
+
+        // คำนวณค่าสัมประสิทธิ์ Polynomial (เดิม สำหรับ polynomial form)
+        function getPolynomialCoefficients(x1, y1, x2, y2, x3, y3) {
+            const denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
+            const c = (y1 * (x2 - x3) + y2 * (x3 - x1) + y3 * (x1 - x2)) / denom;
+            const b = (y1 * (x3*x3 - x2*x2) + y2 * (x1*x1 - x3*x3) + y3 * (x2*x2 - x1*x1)) / denom;
+            const a = y1 - b * x1 - c * x1 * x1;
+            return { a, b, c };
+        }
+
+        // คำนวณค่า Error ด้วย Lagrange Interpolation (เดิม)
+        function calculateError(T, x1, y1, x2, y2, x3, y3) {
+            const L1 = ((T - x2) * (T - x3)) / ((x1 - x2) * (x1 - x3));
+            const L2 = ((T - x1) * (T - x3)) / ((x2 - x1) * (x2 - x3));
+            const L3 = ((T - x1) * (T - x2)) / ((x3 - x1) * (x3 - x2));
+            return y1 * L1 + y2 * L2 + y3 * L3;
+        }
+
+        // คำนวณแต่ละรายการ
+        function calculateSingle(index) {
+            const x1 = parseFloat(document.getElementById('mean1').value);
+            const y1 = parseFloat(document.getElementById('err1').value);
+            const x2 = parseFloat(document.getElementById('mean2').value);
+            const y2 = parseFloat(document.getElementById('err2').value);
+            const x3 = parseFloat(document.getElementById('mean3').value);
+            const y3 = parseFloat(document.getElementById('err3').value);
+
+            if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2) || isNaN(x3) || isNaN(y3)) {
+                alert('กรุณากรอกข้อมูล Calibration Points ให้ครบถ้วนในแท็บ "ตั้งค่า Calibration"');
+                return;
+            }
+
+            const measured = parseFloat(document.getElementById(`measured_${index}`).value);
+            
+            if (!isNaN(measured)) {
+                const adjustment = calculateError(measured, x1, y1, x2, y2, x3, y3);
+                const adjusted = measured - adjustment;
+                
+                document.getElementById(`adjustment_${index}`).value = adjustment.toFixed(3);
+                document.getElementById(`adjusted_${index}`).value = adjusted.toFixed(3);
+                
+                // Highlight effect
+                document.getElementById(`adjusted_${index}`).parentElement.classList.add('highlight');
+                setTimeout(() => {
+                    document.getElementById(`adjusted_${index}`).parentElement.classList.remove('highlight');
+                }, 1000);
+            }
+        }
+
+        // คำนวณทั้งหมด
+        function calculateAll() {
+            const x1 = parseFloat(document.getElementById('mean1').value);
+            const y1 = parseFloat(document.getElementById('err1').value);
+            const x2 = parseFloat(document.getElementById('mean2').value);
+            const y2 = parseFloat(document.getElementById('err2').value);
+            const x3 = parseFloat(document.getElementById('mean3').value);
+            const y3 = parseFloat(document.getElementById('err3').value);
+
+            if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2) || isNaN(x3) || isNaN(y3)) {
+                alert('กรุณากรอกข้อมูล Calibration Points ให้ครบถ้วนในแท็บ "ตั้งค่า Calibration"');
+                return;
+            }
+
+            let calculated = 0;
+            locations.forEach((location, index) => {
+                const measured = parseFloat(document.getElementById(`measured_${index}`).value);
+                
+                if (!isNaN(measured)) {
+                    const adjustment = calculateError(measured, x1, y1, x2, y2, x3, y3);
+                    const adjusted = measured - adjustment;
+                    
+                    document.getElementById(`adjustment_${index}`).value = adjustment.toFixed(3);
+                    document.getElementById(`adjusted_${index}`).value = adjusted.toFixed(3);
+                    
+                    // Highlight effect
+                    document.getElementById(`adjusted_${index}`).parentElement.classList.add('highlight');
+                    setTimeout(() => {
+                        document.getElementById(`adjusted_${index}`).parentElement.classList.remove('highlight');
+                    }, 1000);
+                    
+                    calculated++;
+                }
+            });
+
+            if (calculated === 0) {
+                alert('กรุณากรอกค่าที่วัดได้อย่างน้อย 1 ตำแหน่ง');
+            } else {
+                alert(`คำนวณเสร็จสิ้น! จำนวน ${calculated} รายการ`);
+            }
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            let csv = 'No,Sensor Location,ค่าที่วัดได้ (°C),Adjustment,ค่าหลัง Adjust (°C)\n';
+            
+            locations.forEach((location, index) => {
+                const measured = document.getElementById(`measured_${index}`).value || '';
+                const adjustment = document.getElementById(`adjustment_${index}`).value || '';
+                const adjusted = document.getElementById(`adjusted_${index}`).value || '';
+                csv += `${index + 1},"${location}",${measured},${adjustment},${adjusted}\n`;
+            });
+
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'UUC_Adjustment_Results.csv');
+            link.click();
+        }
+
+        // Switch tabs
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Event listeners
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById('mean' + i).addEventListener('input', () => updateError(i));
+            document.getElementById('std' + i).addEventListener('input', () => updateError(i));
+        }
+
+        // Initialize
+        initializeTable();
+        updateError(1);
+        updateError(2);
+        updateError(3);
+        updateFormula();
+        updateLagrangeFormula();
+    </script>
+</body>
+</html>
