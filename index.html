@@ -1055,8 +1055,8 @@
                 const den3 = `(${x3_str} - ${x1_str})(${x3_str} - ${x2_str})`;
 
                 const fullFormulaText = currentLang === 'th' ? 
-                    `\\text{Error}(T) = ${y1_str} \\times \\frac{(T - ${x2_str})(T - ${x3_str}) }{ ${den1} } + ${y2_str} \\times \\frac{(T - ${x1_str})(T - ${x3_str}) }{ ${den2} } + ${y3_str} \\times \\frac{(T - ${x1_str})(T - ${x2_str}) }{ ${den3} } \\\\ \\text{ค่าหลังปรับ (Standard Value)} = T - \\text{Error}(T)` :
-                    `\\text{Error}(T) = ${y1_str} \\times \\frac{(T - ${x2_str})(T - ${x3_str}) }{ ${den1} } + ${y2_str} \\times \\frac{(T - ${x1_str})(T - ${x3_str}) }{ ${den2} } + ${y3_str} \\times \\frac{(T - ${x1_str})(T - ${x2_str}) }{ ${den3} } \\\\ \\text{Adjusted Value (Standard Value)} = T - \\text{Error}(T)`;
+                    `\\begin{align*}\\text{Error}(T) &= ${y1_str} \\times \\frac{(T - ${x2_str})(T - ${x3_str}) }{ ${den1} } + ${y2_str} \\times \\frac{(T - ${x1_str})(T - ${x3_str}) }{ ${den2} } + ${y3_str} \\times \\frac{(T - ${x1_str})(T - ${x2_str}) }{ ${den3} } \\\\ \\text{ค่าหลังปรับ (Standard Value)} &= T - \\text{Error}(T)\\end{align*}` :
+                    `\\begin{align*}\\text{Error}(T) &= ${y1_str} \\times \\frac{(T - ${x2_str})(T - ${x3_str}) }{ ${den1} } + ${y2_str} \\times \\frac{(T - ${x1_str})(T - ${x3_str}) }{ ${den2} } + ${y3_str} \\times \\frac{(T - ${x1_str})(T - ${x2_str}) }{ ${den3} } \\\\ \\text{Adjusted Value (Standard Value)} &= T - \\text{Error}(T)\\end{align*}`;
 
                 document.getElementById('L1').innerHTML = `\\[ ${L1Text} \\]`;
                 document.getElementById('L2').innerHTML = `\\[ ${L2Text} \\]`;
