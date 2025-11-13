@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 );
             min-height: 100vh;
             padding: 20px;
         }
@@ -64,7 +64,7 @@
         }
 
         .tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 );
             color: white;
         }
 
@@ -81,7 +81,7 @@
         }
 
         .section-title {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 );
             color: white;
             padding: 12px 20px;
             border-radius: 10px;
@@ -128,7 +128,7 @@
         }
 
         input {
-            width: 100%;
+            width: ;
             padding: 10px 12px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
@@ -155,13 +155,13 @@
         }
 
         table {
-            width: 100%;
+            width: ;
             border-collapse: collapse;
             min-width: 600px; /* กำหนดความกว้างขั้นต่ำเพื่อให้ตารางสกロールได้ถ้าจอเล็ก */
         }
 
         thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 );
             color: white;
         }
 
@@ -188,9 +188,9 @@
         }
 
         .btn-calculate-all {
-            width: 100%;
+            width: ;
             padding: 14px;
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: linear-gradient(135deg, #28a745 0%, #20c997 );
             color: white;
             border: none;
             border-radius: 10px;
@@ -209,7 +209,7 @@
 
         .btn-export {
             padding: 10px 20px;
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 );
             color: white;
             border: none;
             border-radius: 8px;
@@ -275,7 +275,7 @@
         }
 
         .explanation-table {
-            width: 100%;
+            width: ;
             border-collapse: collapse;
             margin: 15px 0;
             background: white;
@@ -294,7 +294,7 @@
         }
 
         .explanation-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 );
             color: white;
             font-weight: 600;
             text-transform: uppercase;
@@ -310,7 +310,7 @@
         }
 
         .explanation-table tbody tr:hover {
-            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 );
             transform: scale(1.01);
             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
         }
@@ -342,7 +342,7 @@
 
         @keyframes highlight {
             0% { background: #fff3cd; }
-            100% { background: transparent; }
+             { background: transparent; }
         }
 
         .chart-section {
@@ -355,7 +355,7 @@
 
         #errorChart {
             max-height: 400px;
-            width: 100%;
+            width: ;
         }
 
         /* Language Toggle Button */
@@ -364,7 +364,7 @@
             top: 20px;
             right: 20px;
             z-index: 1000;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 );
             color: white;
             border: none;
             width: 40px;
@@ -386,7 +386,7 @@
         }
 
         .lang-toggle.active {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: linear-gradient(135deg, #28a745 0%, #20c997 );
         }
 
         /* Media Queries สำหรับอุปกรณ์ต่างๆ */
@@ -438,7 +438,7 @@
             }
 
             .tab {
-                width: 100%;
+                width: ;
                 padding: 12px;
                 font-size: 13px;
             }
@@ -489,7 +489,7 @@
             }
 
             .btn-export {
-                width: 100%;
+                width: ;
                 padding: 12px;
                 font-size: 13px;
             }
@@ -721,7 +721,7 @@
                     <div class="explanation-title" data-th="📘 คำอธิบายวิธีการคำนวณแบบละเอียด" data-en="📘 Detailed Calculation Method Explanation">📘 คำอธิบายวิธีการคำนวณแบบละเอียด</div>
                     <div class="explanation-content">
                         <p><strong data-th="Lagrange Interpolation คืออะไร?" data-en="What is Lagrange Interpolation?">Lagrange Interpolation คืออะไร?</strong></p>
-                        <p data-th="Lagrange Interpolation เป็นวิธีการประมาณค่าฟังก์ชัน (interpolation) ที่ใช้จุดข้อมูลที่ทราบแล้ว (ในที่นี้คือ 3 จุด calibration: (x₁, y₁), (x₂, y₂), (x₃, y₃)) เพื่อหาค่า y ที่อุณหภูมิ x ใหม่ (T) โดยสร้าง polynomial ที่ผ่านจุดทั้งหมดโดยตรง โดยไม่ต้องคำนวณ coefficients แบบ linear algebra. วิธีนี้เหมาะสำหรับข้อมูลไม่สม่ำเสมอ (non-uniform) และให้ผลแม่นยำ 100% ที่จุดที่ทราบ. สำหรับ 3 จุด จะได้ polynomial ระดับ 2 (quadratic curve) ที่โค้งงอตามข้อมูลจริง." data-en="Lagrange Interpolation is a method to approximate a function (interpolation) using known data points (here, 3 calibration points: (x₁, y₁), (x₂, y₂), (x₃, y₃)) to find the y value at a new temperature x (T) by constructing a polynomial that passes directly through all points without solving for coefficients via linear algebra. This method is suitable for non-uniform data and provides 100% accuracy at known points. For 3 points, it yields a degree 2 polynomial (quadratic curve) that bends according to the actual data.">Lagrange Interpolation เป็นวิธีการประมาณค่าฟังก์ชัน (interpolation) ที่ใช้จุดข้อมูลที่ทราบแล้ว (ในที่นี้คือ 3 จุด calibration: (x₁, y₁), (x₂, y₂), (x₃, y₃)) เพื่อหาค่า y ที่อุณหภูมิ x ใหม่ (T) โดยสร้าง polynomial ที่ผ่านจุดทั้งหมดโดยตรง โดยไม่ต้องคำนวณ coefficients แบบ linear algebra. วิธีนี้เหมาะสำหรับข้อมูลไม่สม่ำเสมอ (non-uniform) และให้ผลแม่นยำ 100% ที่จุดที่ทราบ. สำหรับ 3 จุด จะได้ polynomial ระดับ 2 (quadratic curve) ที่โค้งงอตามข้อมูลจริง.</p>
+                        <p data-th="Lagrange Interpolation เป็นวิธีการประมาณค่าฟังก์ชัน (interpolation) ที่ใช้จุดข้อมูลที่ทราบแล้ว (ในที่นี้คือ 3 จุด calibration: (x₁, y₁), (x₂, y₂), (x₃, y₃)) เพื่อหาค่า y ที่อุณหภูมิ x ใหม่ (T) โดยสร้าง polynomial ที่ผ่านจุดทั้งหมดโดยตรง โดยไม่ต้องคำนวณ coefficients แบบ linear algebra. วิธีนี้เหมาะสำหรับข้อมูลไม่สม่ำเสมอ (non-uniform) และให้ผลแม่นยำ  ที่จุดที่ทราบ. สำหรับ 3 จุด จะได้ polynomial ระดับ 2 (quadratic curve) ที่โค้งงอตามข้อมูลจริง." data-en="Lagrange Interpolation is a method to approximate a function (interpolation) using known data points (here, 3 calibration points: (x₁, y₁), (x₂, y₂), (x₃, y₃)) to find the y value at a new temperature x (T) by constructing a polynomial that passes directly through all points without solving for coefficients via linear algebra. This method is suitable for non-uniform data and provides  accuracy at known points. For 3 points, it yields a degree 2 polynomial (quadratic curve) that bends according to the actual data.">Lagrange Interpolation เป็นวิธีการประมาณค่าฟังก์ชัน (interpolation) ที่ใช้จุดข้อมูลที่ทราบแล้ว (ในที่นี้คือ 3 จุด calibration: (x₁, y₁), (x₂, y₂), (x₃, y₃)) เพื่อหาค่า y ที่อุณหภูมิ x ใหม่ (T) โดยสร้าง polynomial ที่ผ่านจุดทั้งหมดโดยตรง โดยไม่ต้องคำนวณ coefficients แบบ linear algebra. วิธีนี้เหมาะสำหรับข้อมูลไม่สม่ำเสมอ (non-uniform) และให้ผลแม่นยำ  ที่จุดที่ทราบ. สำหรับ 3 จุด จะได้ polynomial ระดับ 2 (quadratic curve) ที่โค้งงอตามข้อมูลจริง.</p>
                         
                         <p data-th="ระบบใช้ <strong>Lagrange Interpolation</strong> เพื่อหาค่า Error(T) ที่แม่นยำ โดย T คือ Mean UUC (°C) ที่ต้องการปรับ." data-en="The system uses <strong>Lagrange Interpolation</strong> to accurately find Error(T), where T is the Mean UUC (°C) to be adjusted.">ระบบใช้ <strong>Lagrange Interpolation</strong> เพื่อหาค่า Error(T) ที่แม่นยำ โดย T คือ Mean UUC (°C) ที่ต้องการปรับ.</p>
                         
@@ -761,7 +761,7 @@
                             <li data-th="Error(T) = y₁ L₁ + y₂ L₂ + y₃ L₃ <br><em>โดย y₁ = Error จุด 1, y₂ = Error จุด 2, y₃ = Error จุด 3</em>" data-en="Error(T) = y₁ L₁ + y₂ L₂ + y₃ L₃ <br><em>Where y₁ = Error Point 1, y₂ = Error Point 2, y₃ = Error Point 3</em>">Error(T) = y₁ L₁ + y₂ L₂ + y₃ L₃ <br><em>โดย y₁ = Error จุด 1, y₂ = Error จุด 2, y₃ = Error จุด 3</em></li>
                         </ol>
 
-                        <p><em data-th="หมายเหตุ: Adjustment = Error(T), ค่าหลังปรับ = T - Adjustment. แม่นยำ 100% ที่จุด calibration. แนะนำใช้ในช่วง -15°C ถึง 35°C." data-en="Note: Adjustment = Error(T), Adjusted Value = T - Adjustment. 100% accurate at calibration points. Recommended for use in the range -15°C to 35°C.">หมายเหตุ: Adjustment = Error(T), ค่าหลังปรับ = T - Adjustment. แม่นยำ 100% ที่จุด calibration. แนะนำใช้ในช่วง -15°C ถึง 35°C.</em></p>
+                        <p><em data-th="หมายเหตุ: Adjustment = Error(T), ค่าหลังปรับ = T - Adjustment. แม่นยำ  ที่จุด calibration. แนะนำใช้ในช่วง -15°C ถึง 35°C." data-en="Note: Adjustment = Error(T), Adjusted Value = T - Adjustment.  accurate at calibration points. Recommended for use in the range -15°C to 35°C.">หมายเหตุ: Adjustment = Error(T), ค่าหลังปรับ = T - Adjustment. แม่นยำ  ที่จุด calibration. แนะนำใช้ในช่วง -15°C ถึง 35°C.</em></p>
                     </div>
                 </div>
 
@@ -1194,3 +1194,4 @@
     </script>
 </body>
 </html>
+
