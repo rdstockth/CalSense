@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบคำนวณค่าชดเชย UUC</title>
+    <title data-th="ระบบคำนวณค่าชดเชย UUC" data-en="UUC Compensation Calculation System">ระบบคำนวณค่าชดเชย UUC</title>
     <style>
         * {
             margin: 0;
@@ -23,7 +23,7 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             padding: 40px;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -151,11 +151,13 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto; /* เพิ่มเพื่อให้ตารางสกロールได้ในแนวนอนบนมือถือ */
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 600px; /* กำหนดความกว้างขั้นต่ำเพื่อให้ตารางสกロールได้ถ้าจอเล็ก */
         }
 
         thead {
@@ -197,6 +199,7 @@
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             margin-top: 20px;
+            touch-action: manipulation; /* เพิ่มสำหรับการสัมผัสบนมือถือ */
         }
 
         .btn-calculate-all:hover {
@@ -214,6 +217,7 @@
             font-weight: 600;
             cursor: pointer;
             margin-top: 10px;
+            touch-action: manipulation; /* เพิ่มสำหรับการสัมผัสบนมือถือ */
         }
 
         .btn-export:hover {
@@ -239,6 +243,98 @@
             margin: 10px 0;
         }
 
+        .math {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .math-display {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .explanation-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #28a745;
+            margin-top: 30px;
+        }
+
+        .explanation-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .explanation-content {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .explanation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .explanation-table th,
+        .explanation-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+            transition: background-color 0.2s;
+        }
+
+        .explanation-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .explanation-table tbody tr:nth-child(odd) {
+            background: #f8f9ff;
+        }
+
+        .explanation-table tbody tr:nth-child(even) {
+            background: #fff5f8;
+        }
+
+        .explanation-table tbody tr:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .explanation-table .point-cell {
+            font-weight: bold;
+            color: #667eea;
+            border-right: 2px solid #e0e0e0;
+        }
+
+        .explanation-table .value-cell {
+            color: #333;
+            font-family: 'Courier New', monospace;
+        }
+
+        .explanation-table .error-cell {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .explanation-table .error-cell.positive {
+            color: #388e3c;
+        }
+
         .highlight {
             background: #fff3cd;
             animation: highlight 1s ease;
@@ -249,119 +345,430 @@
             100% { background: transparent; }
         }
 
-        @media (max-width: 768px) {
-            .input-row {
-                grid-template-columns: 1fr;
+        .chart-section {
+            margin-top: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #ff9800;
+        }
+
+        #errorChart {
+            max-height: 400px;
+            width: 100%;
+        }
+
+        /* Language Toggle Button */
+        .lang-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lang-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .lang-toggle.active {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        /* Media Queries สำหรับอุปกรณ์ต่างๆ */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 30px;
             }
-            
-            table {
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .section-title {
+                font-size: 15px;
+                padding: 10px 15px;
+            }
+
+            .input-row {
+                grid-template-columns: repeat(2, 1fr); /* สำหรับแท็บเล็ต */
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+
+            .tabs {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .tab {
+                width: 100%;
+                padding: 12px;
+                font-size: 13px;
+            }
+
+            .section-title {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+
+            .calibration-points {
+                gap: 15px;
+            }
+
+            .point-group {
+                padding: 15px;
+            }
+
+            .point-title {
+                font-size: 14px;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr; /* สำหรับมือถือ */
+            }
+
+            label {
                 font-size: 12px;
             }
-            
+
+            input {
+                font-size: 13px;
+                padding: 8px 10px;
+            }
+
             th, td {
-                padding: 8px;
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            td input {
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+
+            .btn-calculate-all {
+                font-size: 15px;
+                padding: 12px;
+            }
+
+            .btn-export {
+                width: 100%;
+                padding: 12px;
+                font-size: 13px;
+            }
+
+            .formula-display {
+                font-size: 12px;
+                padding: 12px;
+            }
+
+            .formula-display pre {
+                font-size: 11px;
+            }
+
+            .explanation-table th,
+            .explanation-table td {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            #errorChart {
+                max-height: 300px;
+            }
+
+            .lang-toggle {
+                top: 10px;
+                right: 10px;
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                padding: 15px;
+                border-radius: 10px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+                margin-bottom: 20px;
+            }
+
+            .tabs {
+                gap: 3px;
+            }
+
+            .tab {
+                font-size: 12px;
+                padding: 10px;
+            }
+
+            .section-title {
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+
+            .point-group {
+                padding: 12px;
+            }
+
+            .point-title {
+                font-size: 13px;
+                margin-bottom: 10px;
+            }
+
+            label {
+                font-size: 11px;
+                margin-bottom: 4px;
+            }
+
+            input {
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+
+            th, td {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            td input {
+                font-size: 11px;
+                padding: 4px 6px;
+            }
+
+            .btn-calculate-all {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .btn-export {
+                font-size: 12px;
+                padding: 10px;
+            }
+
+            .formula-display {
+                font-size: 11px;
+                padding: 10px;
+            }
+
+            .formula-display pre {
+                font-size: 10px;
+            }
+
+            .explanation-table th,
+            .explanation-table td {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            #errorChart {
+                max-height: 250px;
+            }
+
+            .lang-toggle {
+                top: 5px;
+                right: 5px;
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
             }
         }
     </style>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <button class="lang-toggle" id="langToggle" onclick="switchLanguage()">🇺🇸</button>
     <div class="container">
-        <h1>🌡️ ระบบคำนวณค่าชดเชย UUC</h1>
-        <p class="subtitle">Under Uncertainty of Calibration - Sensor Location Management</p>
+        <h1 data-th="🌡️ ระบบคำนวณค่าชดเชย UUC" data-en="🌡️ UUC Compensation Calculation System">🌡️ ระบบคำนวณค่าชดเชย UUC</h1>
+        <p class="subtitle" data-th="Under Uncertainty of Calibration - Sensor Location Management" data-en="Under Uncertainty of Calibration - Sensor Location Management">Under Uncertainty of Calibration - Sensor Location Management</p>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('calibration')">⚙️ ตั้งค่า Calibration</button>
-            <button class="tab" onclick="switchTab('calculation')">📊 คำนวณตาม Location</button>
+            <button class="tab active" data-th="⚙️ ตั้งค่า Calibration" data-en="⚙️ Calibration Setup" onclick="switchTab('calibration')">⚙️ ตั้งค่า Calibration</button>
+            <button class="tab" data-th="📊 คำนวณตาม Location" data-en="📊 Calculate by Location" onclick="switchTab('calculation')">📊 คำนวณตาม Location</button>
         </div>
 
         <!-- Tab: Calibration Setup -->
         <div id="calibration" class="tab-content active">
             <div class="section">
-                <div class="section-title">📊 ข้อมูล Calibration Points (3 จุด)</div>
+                <div class="section-title" data-th="📊 ข้อมูล Calibration Points (3 จุด)" data-en="📊 Calibration Points Data (3 Points)">📊 ข้อมูล Calibration Points (3 จุด)</div>
                 
                 <div class="calibration-points">
                     <div class="point-group">
-                        <div class="point-title">จุดที่ 1 (อุณหภูมิต่ำ)</div>
+                        <div class="point-title" data-th="จุดที่ 1 (อุณหภูมิต่ำ)" data-en="Point 1 (Low Temperature)">จุดที่ 1 (อุณหภูมิต่ำ)</div>
                         <div class="input-row">
                             <div class="input-group">
-                                <label>Mean UUC (°C)</label>
+                                <label data-th="Mean UUC (°C)" data-en="Mean UUC (°C)">Mean UUC (°C)</label>
                                 <input type="number" id="mean1" step="0.001" value="-14.7">
                             </div>
                             <div class="input-group">
-                                <label>Standard (°C)</label>
+                                <label data-th="Standard (°C)" data-en="Standard (°C)">Standard (°C)</label>
                                 <input type="number" id="std1" step="0.001" value="-14.942">
                             </div>
                             <div class="input-group">
-                                <label>Error</label>
+                                <label data-th="Error" data-en="Error">Error</label>
                                 <input type="number" id="err1" step="0.001" value="0.242" readonly>
                             </div>
                         </div>
                     </div>
 
                     <div class="point-group">
-                        <div class="point-title">จุดที่ 2 (อุณหภูมิกลาง)</div>
+                        <div class="point-title" data-th="จุดที่ 2 (อุณหภูมิกลาง)" data-en="Point 2 (Medium Temperature)">จุดที่ 2 (อุณหภูมิกลาง)</div>
                         <div class="input-row">
                             <div class="input-group">
-                                <label>Mean UUC (°C)</label>
+                                <label data-th="Mean UUC (°C)" data-en="Mean UUC (°C)">Mean UUC (°C)</label>
                                 <input type="number" id="mean2" step="0.001" value="25.2">
                             </div>
                             <div class="input-group">
-                                <label>Standard (°C)</label>
+                                <label data-th="Standard (°C)" data-en="Standard (°C)">Standard (°C)</label>
                                 <input type="number" id="std2" step="0.001" value="25.030">
                             </div>
                             <div class="input-group">
-                                <label>Error</label>
+                                <label data-th="Error" data-en="Error">Error</label>
                                 <input type="number" id="err2" step="0.001" value="0.170" readonly>
                             </div>
                         </div>
                     </div>
 
                     <div class="point-group">
-                        <div class="point-title">จุดที่ 3 (อุณหภูมิสูง)</div>
+                        <div class="point-title" data-th="จุดที่ 3 (อุณหภูมิสูง)" data-en="Point 3 (High Temperature)">จุดที่ 3 (อุณหภูมิสูง)</div>
                         <div class="input-row">
                             <div class="input-group">
-                                <label>Mean UUC (°C)</label>
+                                <label data-th="Mean UUC (°C)" data-en="Mean UUC (°C)">Mean UUC (°C)</label>
                                 <input type="number" id="mean3" step="0.001" value="34.9">
                             </div>
                             <div class="input-group">
-                                <label>Standard (°C)</label>
+                                <label data-th="Standard (°C)" data-en="Standard (°C)">Standard (°C)</label>
                                 <input type="number" id="std3" step="0.001" value="35.028">
                             </div>
                             <div class="input-group">
-                                <label>Error</label>
+                                <label data-th="Error" data-en="Error">Error</label>
                                 <input type="number" id="err3" step="0.001" value="-0.128" readonly>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="formula-display" id="formulaDisplay">
-                    <strong>📐 สมการที่ใช้คำนวณ (Polynomial Form):</strong><br>
-                    Error = a + bT + cT²<br>
-                    Standard Value = Mean of UUC − Error
-                </div>
-
                 <div class="formula-display" id="lagrangeDisplay">
-                    <strong>📐 สมการ Lagrange Polynomial แบบเต็ม (Interpolation สำหรับ 3 จุด):</strong><br>
-                    <em>สมการนี้ใช้สำหรับการประมาณค่า Error ที่อุณหภูมิ T ใดๆ โดยผ่านจุด calibration ทั้ง 3 จุด (x₁, y₁), (x₂, y₂), (x₃, y₃)<br>
+                    <strong data-th="📐 สมการ Lagrange Polynomial แบบเต็ม (Interpolation สำหรับ 3 จุด):" data-en="📐 Full Lagrange Polynomial Equation (Interpolation for 3 Points):">📐 สมการ Lagrange Polynomial แบบเต็ม (Interpolation สำหรับ 3 จุด):</strong><br>
+                    <em data-th="สมการนี้ใช้สำหรับการประมาณค่า Error ที่อุณหภูมิ T ใดๆ โดยผ่านจุด calibration ทั้ง 3 จุด (x₁, y₁), (x₂, y₂), (x₃, y₃)<br> โดยที่ x = Mean UUC (°C), y = Error (°C)" data-en="This equation is used to approximate the Error at any temperature T by passing through all 3 calibration points (x₁, y₁), (x₂, y₂), (x₃, y₃)<br> Where x = Mean UUC (°C), y = Error (°C)">สมการนี้ใช้สำหรับการประมาณค่า Error ที่อุณหภูมิ T ใดๆ โดยผ่านจุด calibration ทั้ง 3 จุด (x₁, y₁), (x₂, y₂), (x₃, y₃)<br>
                     โดยที่ x = Mean UUC (°C), y = Error (°C)</em><br><br>
                     
-                    <strong>Error(T) = y₁ ⋅ L₁(T) + y₂ ⋅ L₂(T) + y₃ ⋅ L₃(T)</strong><br><br>
+                    <div id="errorFormula" class="math"></div><br><br>
                     
-                    <strong>ฐาน (Basis Polynomials):</strong><br>
-                    L₁(T) = <span id="L1_num"></span> / <span id="L1_den"></span> = \frac{(T - x₂)(T - x₃)}{(x₁ - x₂)(x₁ - x₃)}<br>
-                    L₂(T) = <span id="L2_num"></span> / <span id="L2_den"></span> = \frac{(T - x₁)(T - x₃)}{(x₂ - x₁)(x₂ - x₃)}<br>
-                    L₃(T) = <span id="L3_num"></span> / <span id="L3_den"></span> = \frac{(T - x₁)(T - x₂)}{(x₃ - x₁)(x₃ - x₂)}<br><br>
+                    <strong data-th="ฐาน (Basis Polynomials):" data-en="Basis (Basis Polynomials):">ฐาน (Basis Polynomials):</strong><br>
+                    <div id="L1" class="math"></div>
+                    <div id="L2" class="math"></div>
+                    <div id="L3" class="math"></div><br><br>
                     
-                    <pre id="fullFormula" style="font-family: monospace; white-space: pre-wrap;">
-Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ - mean₃)] 
-         + err₂ × [(T - mean₁)(T - mean₃) / (mean₂ - mean₁)(mean₂ - mean₃)] 
-         + err₃ × [(T - mean₁)(T - mean₂) / (mean₃ - mean₁)(mean₃ - mean₂)]
+                    <div id="fullFormula" class="math-display"></div>
+                    
+                    <em><strong data-th="หมายเหตุ:" data-en="Note:">หมายเหตุ:</strong> <span data-th="สมการนี้เป็น polynomial ระดับ 2 (quadratic) ที่ผ่านจุดทั้ง 3 โดยอัตโนมัติ เนื่องจาก Lagrange interpolation สำหรับ n+1 จุดให้ polynomial ระดับ n." data-en="This equation is a degree 2 polynomial (quadratic) that passes through all 3 points automatically, as Lagrange interpolation for n+1 points yields a degree n polynomial.">สมการนี้เป็น polynomial ระดับ 2 (quadratic) ที่ผ่านจุดทั้ง 3 โดยอัตโนมัติ เนื่องจาก Lagrange interpolation สำหรับ n+1 จุดให้ polynomial ระดับ n.</span></em>
+                </div>
 
-ค่าหลังปรับ (Standard Value) = T - Error(T)
-                    </pre>
-                    
-                    <em><strong>หมายเหตุ:</strong> สมการนี้เป็น polynomial ระดับ 2 (quadratic) ที่ผ่านจุดทั้ง 3 โดยอัตโนมัติ เนื่องจาก Lagrange interpolation สำหรับ n+1 จุดให้ polynomial ระดับ n.</em>
+                <!-- New Explanation Section Added Here -->
+                <div class="explanation-section">
+                    <div class="explanation-title" data-th="📘 คำอธิบายวิธีการคำนวณแบบละเอียด" data-en="📘 Detailed Calculation Method Explanation">📘 คำอธิบายวิธีการคำนวณแบบละเอียด</div>
+                    <div class="explanation-content">
+                        <p><strong data-th="Lagrange Interpolation คืออะไร?" data-en="What is Lagrange Interpolation?">Lagrange Interpolation คืออะไร?</strong></p>
+                        <p data-th="Lagrange Interpolation เป็นวิธีการประมาณค่าฟังก์ชัน (interpolation) ที่ใช้จุดข้อมูลที่ทราบแล้ว (ในที่นี้คือ 3 จุด calibration: (x₁, y₁), (x₂, y₂), (x₃, y₃)) เพื่อหาค่า y ที่อุณหภูมิ x ใหม่ (T) โดยสร้าง polynomial ที่ผ่านจุดทั้งหมดโดยตรง โดยไม่ต้องคำนวณ coefficients แบบ linear algebra. วิธีนี้เหมาะสำหรับข้อมูลไม่สม่ำเสมอ (non-uniform) และให้ผลแม่นยำ 100% ที่จุดที่ทราบ. สำหรับ 3 จุด จะได้ polynomial ระดับ 2 (quadratic curve) ที่โค้งงอตามข้อมูลจริง." data-en="Lagrange Interpolation is a method to approximate a function (interpolation) using known data points (here, 3 calibration points: (x₁, y₁), (x₂, y₂), (x₃, y₃)) to find the y value at a new temperature x (T) by constructing a polynomial that passes directly through all points without solving for coefficients via linear algebra. This method is suitable for non-uniform data and provides 100% accuracy at known points. For 3 points, it yields a degree 2 polynomial (quadratic curve) that bends according to the actual data.">Lagrange Interpolation เป็นวิธีการประมาณค่าฟังก์ชัน (interpolation) ที่ใช้จุดข้อมูลที่ทราบแล้ว (ในที่นี้คือ 3 จุด calibration: (x₁, y₁), (x₂, y₂), (x₃, y₃)) เพื่อหาค่า y ที่อุณหภูมิ x ใหม่ (T) โดยสร้าง polynomial ที่ผ่านจุดทั้งหมดโดยตรง โดยไม่ต้องคำนวณ coefficients แบบ linear algebra. วิธีนี้เหมาะสำหรับข้อมูลไม่สม่ำเสมอ (non-uniform) และให้ผลแม่นยำ 100% ที่จุดที่ทราบ. สำหรับ 3 จุด จะได้ polynomial ระดับ 2 (quadratic curve) ที่โค้งงอตามข้อมูลจริง.</p>
+                        
+                        <p data-th="ระบบใช้ <strong>Lagrange Interpolation</strong> เพื่อหาค่า Error(T) ที่แม่นยำ โดย T คือ Mean UUC (°C) ที่ต้องการปรับ." data-en="The system uses <strong>Lagrange Interpolation</strong> to accurately find Error(T), where T is the Mean UUC (°C) to be adjusted.">ระบบใช้ <strong>Lagrange Interpolation</strong> เพื่อหาค่า Error(T) ที่แม่นยำ โดย T คือ Mean UUC (°C) ที่ต้องการปรับ.</p>
+                        
+                        <p><strong data-th="ข้อมูลจุดที่ใช้ (ตัวอย่างจากค่าเริ่มต้น):" data-en="Data Points Used (Example from Default Values):">ข้อมูลจุดที่ใช้ (ตัวอย่างจากค่าเริ่มต้น):</strong></p>
+                        <table class="explanation-table">
+                            <thead>
+                                <tr>
+                                    <th data-th="จุด" data-en="Point">จุด</th>
+                                    <th data-th="Mean UUC (°C) (x)" data-en="Mean UUC (°C) (x)">Mean UUC (°C) (x)</th>
+                                    <th data-th="Error (°C) (y)" data-en="Error (°C) (y)">Error (°C) (y)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="point-cell" data-th="1 (ต่ำ)" data-en="1 (Low)">1 (ต่ำ)</td>
+                                    <td class="value-cell">-14.7</td>
+                                    <td class="error-cell positive">0.242</td>
+                                </tr>
+                                <tr>
+                                    <td class="point-cell" data-th="2 (กลาง)" data-en="2 (Medium)">2 (กลาง)</td>
+                                    <td class="value-cell">25.2</td>
+                                    <td class="error-cell positive">0.170</td>
+                                </tr>
+                                <tr>
+                                    <td class="point-cell" data-th="3 (สูง)" data-en="3 (High)">3 (สูง)</td>
+                                    <td class="value-cell">34.9</td>
+                                    <td class="error-cell">-0.128</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p><strong data-th="ขั้นตอนคำนวณ Error(T) ใน calculateError (Lagrange Direct):" data-en="Steps to Calculate Error(T) in calculateError (Lagrange Direct):">ขั้นตอนคำนวณ Error(T) ใน calculateError (Lagrange Direct):</strong></p>
+                        <ol style="font-size: 12px; margin: 10px 0; padding-left: 20px;">
+                            <li data-th="L₁(T) = [(T - x₂)(T - x₃)] / [(x₁ - x₂)(x₁ - x₃)] <br><em>โดย x₁ = Mean UUC จุด 1, x₂ = Mean UUC จุด 2, x₃ = Mean UUC จุด 3, T = Mean UUC ที่ต้องการปรับ</em>" data-en="L₁(T) = [(T - x₂)(T - x₃)] / [(x₁ - x₂)(x₁ - x₃)] <br><em>Where x₁ = Mean UUC Point 1, x₂ = Mean UUC Point 2, x₃ = Mean UUC Point 3, T = Mean UUC to adjust</em>">L₁(T) = [(T - x₂)(T - x₃)] / [(x₁ - x₂)(x₁ - x₃)] <br><em>โดย x₁ = Mean UUC จุด 1, x₂ = Mean UUC จุด 2, x₃ = Mean UUC จุด 3, T = Mean UUC ที่ต้องการปรับ</em></li>
+                            <li data-th="L₂(T) = [(T - x₁)(T - x₃)] / [(x₂ - x₁)(x₂ - x₃)] <br><em>L₂ คือ Basis Polynomial สำหรับจุด 2</em>" data-en="L₂(T) = [(T - x₁)(T - x₃)] / [(x₂ - x₁)(x₂ - x₃)] <br><em>L₂ is the Basis Polynomial for Point 2</em>">L₂(T) = [(T - x₁)(T - x₃)] / [(x₂ - x₁)(x₂ - x₃)] <br><em>L₂ คือ Basis Polynomial สำหรับจุด 2</em></li>
+                            <li data-th="L₃(T) = [(T - x₁)(T - x₂)] / [(x₃ - x₁)(x₃ - x₂)] <br><em>L₃ คือ Basis Polynomial สำหรับจุด 3</em>" data-en="L₃(T) = [(T - x₁)(T - x₂)] / [(x₃ - x₁)(x₃ - x₂)] <br><em>L₃ is the Basis Polynomial for Point 3</em>">L₃(T) = [(T - x₁)(T - x₂)] / [(x₃ - x₁)(x₃ - x₂)] <br><em>L₃ คือ Basis Polynomial สำหรับจุด 3</em></li>
+                            <li data-th="Error(T) = y₁ L₁ + y₂ L₂ + y₃ L₃ <br><em>โดย y₁ = Error จุด 1, y₂ = Error จุด 2, y₃ = Error จุด 3</em>" data-en="Error(T) = y₁ L₁ + y₂ L₂ + y₃ L₃ <br><em>Where y₁ = Error Point 1, y₂ = Error Point 2, y₃ = Error Point 3</em>">Error(T) = y₁ L₁ + y₂ L₂ + y₃ L₃ <br><em>โดย y₁ = Error จุด 1, y₂ = Error จุด 2, y₃ = Error จุด 3</em></li>
+                        </ol>
+
+                        <p><em data-th="หมายเหตุ: Adjustment = Error(T), ค่าหลังปรับ = T - Adjustment. แม่นยำ 100% ที่จุด calibration. แนะนำใช้ในช่วง -15°C ถึง 35°C." data-en="Note: Adjustment = Error(T), Adjusted Value = T - Adjustment. 100% accurate at calibration points. Recommended for use in the range -15°C to 35°C.">หมายเหตุ: Adjustment = Error(T), ค่าหลังปรับ = T - Adjustment. แม่นยำ 100% ที่จุด calibration. แนะนำใช้ในช่วง -15°C ถึง 35°C.</em></p>
+                    </div>
+                </div>
+
+                <!-- New Chart Section -->
+                <div class="chart-section">
+                    <div class="section-title" data-th="📈 กราฟแสดงค่า Error ตามช่วงอุณหภูมิ (-15°C ถึง 35°C)" data-en="📈 Graph Showing Error Values Across Temperature Range (-15°C to 35°C)">📈 กราฟแสดงค่า Error ตามช่วงอุณหภูมิ (-15°C ถึง 35°C)</div>
+                    <canvas id="errorChart"></canvas>
                 </div>
             </div>
         </div>
@@ -369,24 +776,22 @@ Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ -
         <!-- Tab: Calculation by Location -->
         <div id="calculation" class="tab-content">
             <div class="section">
-                <div class="section-title">📍 คำนวณค่า Adjustment แยกตาม Sensor Location</div>
+                <div class="section-title" data-th="📍 คำนวณค่า Adjustment แยกตาม Sensor Location" data-en="📍 Calculate Adjustment by Sensor Location">📍 คำนวณค่า Adjustment แยกตาม Sensor Location</div>
                 
                 <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
-                    <strong>📝 วิธีใช้งาน:</strong><br>
-                    1. กรอก <strong>"ค่าที่วัดได้"</strong> จากเครื่องมือวัด<br>
-                    2. ระบบจะคำนวณ <strong>"Adjustment"</strong> (ค่าชดเชย) อัตโนมัติ<br>
-                    3. แสดง <strong>"ค่าหลัง Adjust"</strong> (ค่าที่แท้จริง) = ค่าที่วัดได้ - Adjustment
+                    <strong data-th="📝 วิธีใช้งาน:" data-en="📝 How to Use:">📝 วิธีใช้งาน:</strong><br>
+                    <span data-th="1. กรอก &quot;ค่าที่วัดได้&quot; จากเครื่องมือวัด&lt;br&gt;2. ระบบจะคำนวณ &quot;Adjustment&quot; (ค่าชดเชย) อัตโนมัติ&lt;br&gt;3. แสดง &quot;ค่าหลัง Adjust&quot; (ค่าที่แท้จริง) = ค่าที่วัดได้ - Adjustment" data-en="1. Enter the &quot;Measured Value&quot; from the measuring instrument&lt;br&gt;2. The system will automatically calculate &quot;Adjustment&quot; (compensation value)&lt;br&gt;3. Display &quot;Adjusted Value&quot; (true value) = Measured Value - Adjustment">1. กรอก &quot;ค่าที่วัดได้&quot; จากเครื่องมือวัด<br>2. ระบบจะคำนวณ &quot;Adjustment&quot; (ค่าชดเชย) อัตโนมัติ<br>3. แสดง &quot;ค่าหลัง Adjust&quot; (ค่าที่แท้จริง) = ค่าที่วัดได้ - Adjustment</span>
                 </div>
                 
                 <div class="locations-table">
                     <table id="locationsTable">
                         <thead>
                             <tr>
-                                <th style="width: 5%;">#</th>
-                                <th style="width: 30%;">Sensor Location</th>
-                                <th style="width: 20%;">ค่าที่วัดได้ (°C)</th>
-                                <th style="width: 22.5%;">Adjustment</th>
-                                <th style="width: 22.5%;">ค่าหลัง Adjust (°C)</th>
+                                <th style="width: 5%;" data-th="#" data-en="#">#</th>
+                                <th style="width: 30%;" data-th="Sensor Location" data-en="Sensor Location">Sensor Location</th>
+                                <th style="width: 20%;" data-th="ค่าที่วัดได้ (°C)" data-en="Measured Value (°C)">ค่าที่วัดได้ (°C)</th>
+                                <th style="width: 22.5%;" data-th="Adjustment" data-en="Adjustment">Adjustment</th>
+                                <th style="width: 22.5%;" data-th="ค่าหลัง Adjust (°C)" data-en="Adjusted Value (°C)">ค่าหลัง Adjust (°C)</th>
                             </tr>
                         </thead>
                         <tbody id="locationsBody">
@@ -394,8 +799,8 @@ Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ -
                     </table>
                 </div>
 
-                <button class="btn-calculate-all" onclick="calculateAll()">🔄 คำนวณทั้งหมด</button>
-                <button class="btn-export" onclick="exportToCSV()">📥 ดาวน์โหลด CSV</button>
+                <button class="btn-calculate-all" data-th="🔄 คำนวณทั้งหมด" data-en="🔄 Calculate All" onclick="calculateAll()">🔄 คำนวณทั้งหมด</button>
+                <button class="btn-export" data-th="📥 ดาวน์โหลด CSV" data-en="📥 Download CSV" onclick="exportToCSV()">📥 ดาวน์โหลด CSV</button>
             </div>
         </div>
     </div>
@@ -428,6 +833,57 @@ Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ -
             "Server room"
         ];
 
+        let errorChart;
+        let currentLang = 'th'; // Default to Thai
+
+        // Language texts for alerts and placeholders
+        const langTexts = {
+            th: {
+                placeholder: 'กรอกค่าที่วัดได้',
+                alertCalibration: 'กรุณากรอกข้อมูล Calibration Points ให้ครบถ้วนในแท็บ "ตั้งค่า Calibration"',
+                alertNoData: 'กรุณากรอกค่าที่วัดได้อย่างน้อย 1 ตำแหน่ง',
+                alertCalculated: 'คำนวณเสร็จสิ้น! จำนวน {count} รายการ',
+                csvHeader: 'No,Sensor Location,ค่าที่วัดได้ (°C),Adjustment,ค่าหลัง Adjust (°C)\n'
+            },
+            en: {
+                placeholder: 'Enter measured value',
+                alertCalibration: 'Please complete the Calibration Points data in the "Calibration Setup" tab',
+                alertNoData: 'Please enter at least 1 measured value',
+                alertCalculated: 'Calculation complete! {count} items processed',
+                csvHeader: 'No,Sensor Location,Measured Value (°C),Adjustment,Adjusted Value (°C)\n'
+            }
+        };
+
+        // Function to switch language
+        function switchLanguage() {
+            currentLang = currentLang === 'th' ? 'en' : 'th';
+            const elements = document.querySelectorAll('[data-th], [data-en]');
+            elements.forEach(el => {
+                if (el.hasAttribute('data-th') && el.hasAttribute('data-en')) {
+                    el.innerHTML = currentLang === 'th' ? el.dataset.th : el.dataset.en;
+                }
+            });
+            const toggleBtn = document.getElementById('langToggle');
+            toggleBtn.textContent = currentLang === 'th' ? '🇺🇸' : '🇹🇭';
+            toggleBtn.classList.toggle('active', currentLang === 'en');
+            // Update placeholders and other dynamic texts
+            updateDynamicTexts();
+            // Re-render MathJax and chart if needed
+            if (document.getElementById('calibration').classList.contains('active')) {
+                updateLagrangeFormula();
+                typesetMath();
+                updateChart();
+            }
+        }
+
+        function updateDynamicTexts() {
+            const inputs = document.querySelectorAll('input[placeholder]');
+            inputs.forEach(input => {
+                input.placeholder = langTexts[currentLang].placeholder;
+            });
+            // Update table headers if needed (already handled by data attributes)
+        }
+
         // สร้างตาราง
         function initializeTable() {
             const tbody = document.getElementById('locationsBody');
@@ -438,11 +894,113 @@ Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ -
                 row.innerHTML = `
                     <td>${index + 1}</td>
                     <td><strong>${location}</strong></td>
-                    <td><input type="number" step="0.01" id="measured_${index}" placeholder="กรอกค่าที่วัดได้" onchange="calculateSingle(${index})"></td>
+                    <td><input type="number" step="0.01" id="measured_${index}" placeholder="${langTexts[currentLang].placeholder}" onchange="calculateSingle(${index})"></td>
                     <td><input type="number" step="0.001" id="adjustment_${index}" readonly style="background: #fff3cd; font-weight: 600;"></td>
                     <td><input type="number" step="0.001" id="adjusted_${index}" readonly style="background: #d4edda; font-weight: 600;"></td>
                 `;
                 tbody.appendChild(row);
+            });
+        }
+
+        // รอ MathJax load
+        function waitForMathJax() {
+            return new Promise((resolve) => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    resolve();
+                } else {
+                    const observer = new MutationObserver(() => {
+                        if (window.MathJax && window.MathJax.typesetPromise) {
+                            observer.disconnect();
+                            resolve();
+                        }
+                    });
+                    observer.observe(document.body, { childList: true, subtree: true });
+                }
+            });
+        }
+
+        async function typesetMath() {
+            try {
+                await waitForMathJax();
+                await MathJax.typesetPromise();
+            } catch (error) {
+                console.error('MathJax typeset error:', error);
+            }
+        }
+
+        // อัปเดตกราฟ Line Chart
+        function updateChart() {
+            const x1 = parseFloat(document.getElementById('mean1').value);
+            const y1 = parseFloat(document.getElementById('err1').value);
+            const x2 = parseFloat(document.getElementById('mean2').value);
+            const y2 = parseFloat(document.getElementById('err2').value);
+            const x3 = parseFloat(document.getElementById('mean3').value);
+            const y3 = parseFloat(document.getElementById('err3').value);
+
+            if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2) || isNaN(x3) || isNaN(y3)) {
+                return;
+            }
+
+            const temperatures = [];
+            const errors = [];
+            for (let t = -15; t <= 35; t += 1) {
+                temperatures.push(t);
+                errors.push(calculateError(t, x1, y1, x2, y2, x3, y3));
+            }
+
+            const ctx = document.getElementById('errorChart').getContext('2d');
+            if (errorChart) {
+                errorChart.destroy();
+            }
+
+            const chartTitle = currentLang === 'th' ? 'Error Curve from Lagrange Interpolation (-15°C to 35°C)' : 'Error Curve from Lagrange Interpolation (-15°C to 35°C)';
+            const xLabel = currentLang === 'th' ? 'Mean UUC (°C)' : 'Mean UUC (°C)';
+            const yLabel = currentLang === 'th' ? 'Error (°C)' : 'Error (°C)';
+
+            errorChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: temperatures,
+                    datasets: [{
+                        label: currentLang === 'th' ? 'Error (°C)' : 'Error (°C)',
+                        data: errors,
+                        borderColor: 'rgb(102, 126, 234)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: xLabel
+                            },
+                            min: -15,
+                            max: 35
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: yLabel
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: chartTitle
+                        },
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
             });
         }
 
@@ -453,32 +1011,14 @@ Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ -
             if (!isNaN(mean) && !isNaN(std)) {
                 const error = mean - std;
                 document.getElementById('err' + pointNum).value = error.toFixed(3);
-                updateFormula();
                 updateLagrangeFormula();
-            }
-        }
-
-        // อัปเดตสมการ Polynomial (เดิม)
-        function updateFormula() {
-            const x1 = parseFloat(document.getElementById('mean1').value);
-            const y1 = parseFloat(document.getElementById('err1').value);
-            const x2 = parseFloat(document.getElementById('mean2').value);
-            const y2 = parseFloat(document.getElementById('err2').value);
-            const x3 = parseFloat(document.getElementById('mean3').value);
-            const y3 = parseFloat(document.getElementById('err3').value);
-
-            if (!isNaN(x1) && !isNaN(y1) && !isNaN(x2) && !isNaN(y2) && !isNaN(x3) && !isNaN(y3)) {
-                const coeffs = getPolynomialCoefficients(x1, y1, x2, y2, x3, y3);
-                document.getElementById('formulaDisplay').innerHTML = `
-                    <strong>📐 สมการที่ใช้คำนวณ (Polynomial Form):</strong><br>
-                    Error = ${coeffs.a.toFixed(8)} ${coeffs.b >= 0 ? '+' : ''}${coeffs.b.toFixed(8)}T ${coeffs.c >= 0 ? '+' : ''}${coeffs.c.toFixed(8)}T²<br>
-                    Standard Value = Mean of UUC − Error
-                `;
+                updateChart();
+                typesetMath();
             }
         }
 
         // อัปเดตสมการ Lagrange แบบเต็ม
-        function updateLagrangeFormula() {
+        async function updateLagrangeFormula() {
             const x1 = parseFloat(document.getElementById('mean1').value);
             const y1 = parseFloat(document.getElementById('err1').value);
             const x2 = parseFloat(document.getElementById('mean2').value);
@@ -492,36 +1032,45 @@ Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ -
                 const L2_den = (x2 - x1) * (x2 - x3);
                 const L3_den = (x3 - x1) * (x3 - x2);
 
-                // อัพเดท spans สำหรับ numerators (แต่เนื่องจากเป็น symbolic, แสดงเป็น text)
-                document.getElementById('L1_num').textContent = `(T - ${x2.toFixed(3)})(T - ${x3.toFixed(3)})`;
-                document.getElementById('L1_den').textContent = `(${x1.toFixed(3)} - ${x2.toFixed(3)})( ${x1.toFixed(3)} - ${x3.toFixed(3)}) = ${L1_den.toFixed(6)}`;
+                const x1_str = x1.toFixed(3);
+                const x2_str = x2.toFixed(3);
+                const x3_str = x3.toFixed(3);
+                const y1_str = y1.toFixed(3);
+                const y2_str = y2.toFixed(3);
+                const y3_str = y3.toFixed(3);
+                const L1_den_str = L1_den.toFixed(6);
+                const L2_den_str = L2_den.toFixed(6);
+                const L3_den_str = L3_den.toFixed(6);
 
-                document.getElementById('L2_num').textContent = `(T - ${x1.toFixed(3)})(T - ${x3.toFixed(3)})`;
-                document.getElementById('L2_den').textContent = `(${x2.toFixed(3)} - ${x1.toFixed(3)})( ${x2.toFixed(3)} - ${x3.toFixed(3)}) = ${L2_den.toFixed(6)}`;
+                const errorFormulaText = `\\text{Error}(T) = ${y1_str} \\cdot L_1(T) + ${y2_str} \\cdot L_2(T) + ${y3_str} \\cdot L_3(T)`;
 
-                document.getElementById('L3_num').textContent = `(T - ${x1.toFixed(3)})(T - ${x2.toFixed(3)})`;
-                document.getElementById('L3_den').textContent = `(${x3.toFixed(3)} - ${x1.toFixed(3)})( ${x3.toFixed(3)} - ${x2.toFixed(3)}) = ${L3_den.toFixed(6)}`;
+                const L1Text = `L_1(T) = \\frac{(T - ${x2_str})(T - ${x3_str}) }{ ${L1_den_str} }`;
 
-                // อัพเดท full formula pre
-                const fullFormula = `Error(T) = ${y1.toFixed(3)} × [(T - ${x2.toFixed(3)})(T - ${x3.toFixed(3)}) / (${x1.toFixed(3)} - ${x2.toFixed(3)})( ${x1.toFixed(3)} - ${x3.toFixed(3)})] 
-         + ${y2.toFixed(3)} × [(T - ${x1.toFixed(3)})(T - ${x3.toFixed(3)}) / (${x2.toFixed(3)} - ${x1.toFixed(3)})( ${x2.toFixed(3)} - ${x3.toFixed(3)})] 
-         + ${y3.toFixed(3)} × [(T - ${x1.toFixed(3)})(T - ${x2.toFixed(3)}) / (${x3.toFixed(3)} - ${x1.toFixed(3)})( ${x3.toFixed(3)} - ${x2.toFixed(3)})]
+                const L2Text = `L_2(T) = \\frac{(T - ${x1_str})(T - ${x3_str}) }{ ${L2_den_str} }`;
 
-ค่าหลังปรับ (Standard Value) = T - Error(T)`;
-                document.getElementById('fullFormula').textContent = fullFormula;
+                const L3Text = `L_3(T) = \\frac{(T - ${x1_str})(T - ${x2_str}) }{ ${L3_den_str} }`;
+
+                const den1 = `(${x1_str} - ${x2_str})(${x1_str} - ${x3_str})`;
+                const den2 = `(${x2_str} - ${x1_str})(${x2_str} - ${x3_str})`;
+                const den3 = `(${x3_str} - ${x1_str})(${x3_str} - ${x2_str})`;
+
+                const fullFormulaText = currentLang === 'th' ? 
+                    `\\text{Error}(T) = ${y1_str} \\times \\frac{(T - ${x2_str})(T - ${x3_str}) }{ ${den1} } + ${y2_str} \\times \\frac{(T - ${x1_str})(T - ${x3_str}) }{ ${den2} } + ${y3_str} \\times \\frac{(T - ${x1_str})(T - ${x2_str}) }{ ${den3} } \\\\ \\text{ค่าหลังปรับ (Standard Value)} = T - \\text{Error}(T)` :
+                    `\\text{Error}(T) = ${y1_str} \\times \\frac{(T - ${x2_str})(T - ${x3_str}) }{ ${den1} } + ${y2_str} \\times \\frac{(T - ${x1_str})(T - ${x3_str}) }{ ${den2} } + ${y3_str} \\times \\frac{(T - ${x1_str})(T - ${x2_str}) }{ ${den3} } \\\\ \\text{Adjusted Value (Standard Value)} = T - \\text{Error}(T)`;
+
+                document.getElementById('L1').innerHTML = `\\[ ${L1Text} \\]`;
+                document.getElementById('L2').innerHTML = `\\[ ${L2Text} \\]`;
+                document.getElementById('L3').innerHTML = `\\[ ${L3Text} \\]`;
+
+                document.getElementById('errorFormula').innerHTML = `\\[ ${errorFormulaText} \\]`;
+
+                document.getElementById('fullFormula').innerHTML = `\\[ ${fullFormulaText} \\]`;
+
+                await typesetMath();
             }
         }
 
-        // คำนวณค่าสัมประสิทธิ์ Polynomial (เดิม สำหรับ polynomial form)
-        function getPolynomialCoefficients(x1, y1, x2, y2, x3, y3) {
-            const denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
-            const c = (y1 * (x2 - x3) + y2 * (x3 - x1) + y3 * (x1 - x2)) / denom;
-            const b = (y1 * (x3*x3 - x2*x2) + y2 * (x1*x1 - x3*x3) + y3 * (x2*x2 - x1*x1)) / denom;
-            const a = y1 - b * x1 - c * x1 * x1;
-            return { a, b, c };
-        }
-
-        // คำนวณค่า Error ด้วย Lagrange Interpolation (เดิม)
+        // คำนวณค่า Error ด้วย Lagrange Interpolation
         function calculateError(T, x1, y1, x2, y2, x3, y3) {
             const L1 = ((T - x2) * (T - x3)) / ((x1 - x2) * (x1 - x3));
             const L2 = ((T - x1) * (T - x3)) / ((x2 - x1) * (x2 - x3));
@@ -539,7 +1088,7 @@ Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ -
             const y3 = parseFloat(document.getElementById('err3').value);
 
             if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2) || isNaN(x3) || isNaN(y3)) {
-                alert('กรุณากรอกข้อมูล Calibration Points ให้ครบถ้วนในแท็บ "ตั้งค่า Calibration"');
+                alert(langTexts[currentLang].alertCalibration);
                 return;
             }
 
@@ -570,7 +1119,7 @@ Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ -
             const y3 = parseFloat(document.getElementById('err3').value);
 
             if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2) || isNaN(x3) || isNaN(y3)) {
-                alert('กรุณากรอกข้อมูล Calibration Points ให้ครบถ้วนในแท็บ "ตั้งค่า Calibration"');
+                alert(langTexts[currentLang].alertCalibration);
                 return;
             }
 
@@ -596,15 +1145,15 @@ Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ -
             });
 
             if (calculated === 0) {
-                alert('กรุณากรอกค่าที่วัดได้อย่างน้อย 1 ตำแหน่ง');
+                alert(langTexts[currentLang].alertNoData);
             } else {
-                alert(`คำนวณเสร็จสิ้น! จำนวน ${calculated} รายการ`);
+                alert(langTexts[currentLang].alertCalculated.replace('{count}', calculated));
             }
         }
 
         // Export to CSV
         function exportToCSV() {
-            let csv = 'No,Sensor Location,ค่าที่วัดได้ (°C),Adjustment,ค่าหลัง Adjust (°C)\n';
+            let csv = langTexts[currentLang].csvHeader;
             
             locations.forEach((location, index) => {
                 const measured = document.getElementById(`measured_${index}`).value || '';
@@ -617,7 +1166,7 @@ Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ -
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', 'UUC_Adjustment_Results.csv');
+            link.setAttribute('download', currentLang === 'th' ? 'UUC_Adjustment_Results.csv' : 'UUC_Adjustment_Results.csv');
             link.click();
         }
 
@@ -641,8 +1190,7 @@ Error(T) = err₁ × [(T - mean₂)(T - mean₃) / (mean₁ - mean₂)(mean₁ -
         updateError(1);
         updateError(2);
         updateError(3);
-        updateFormula();
-        updateLagrangeFormula();
+        updateChart();
     </script>
 </body>
 </html>
